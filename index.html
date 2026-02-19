@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pola✦Diary</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+/* ── PHONE SHELL ── */
+body {
+  background: #2A2420;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'DM Sans', sans-serif;
+  background-image: radial-gradient(ellipse at 30% 20%, #3a3028 0%, #1a1612 100%);
+}
+
+.phone-shell {
+  width: 390px;
+  height: 844px;
+  background: #1a1612;
+  border-radius: 52px;
+  position: relative;
+  box-shadow:
+    0 0 0 1px #3a3028,
+    0 0 0 10px #242018,
+    0 40px 80px rgba(0,0,0,0.7),
+    inset 0 0 0 1px rgba(255,255,255,0.06);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* notch */
+.phone-notch {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 126px; height: 34px;
+  background: #1a1612;
+  border-radius: 0 0 20px 20px;
+  z-index: 999;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.notch-camera { width: 12px; height: 12px; background: #0f0e0c; border-radius: 50%; border: 2px solid #2a2420; }
+.notch-speaker { width: 50px; height: 5px; background: #0f0e0c; border-radius: 3px; }
+
+/* status bar */
+.status-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 44px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 0 28px 6px;
+  z-index: 998;
+  color: rgba(255,255,255,0.9);
+  font-size: 12px; font-weight: 600;
+  pointer-events: none;
+}
+.status-time { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+.status-icons { display: flex; gap: 5px; align-items: center; font-size: 11px; }
+
+/* ── APP SCREEN ── */
+.app-screen {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 52px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* CSS variables */
+:root {
+  --bg: #F4EFE6;
+  --paper: #FAF7F1;
+  --paper2: #F5F1E8;
+  --accent: #9B2335;
+  --gold: #C4923A;
+  --blue: #5C7A96;
+  --sage: #7A9688;
+  --ink: #251E14;
+  --ink2: rgba(37,30,20,0.45);
+  --ink3: rgba(37,30,20,0.1);
+}
+
+/* ── SCREENS ── */
+.screen {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+  border-radius: 52px;
+  overflow: hidden;
+}
+.screen.active { opacity: 1; pointer-events: all; }
+
+/* grain texture */
+.screen::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 200; border-radius: 52px;
+}
+
+/* ── STATUS BAR INSIDE APP ── */
+.app-status {
+  height: 50px;
+  flex-shrink: 0;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 0 24px 8px;
+  font-size: 12px; font-weight: 600; color: var(--ink);
+}
+.app-status.dark { color: rgba(255,255,255,0.9); }
+.app-time { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+.app-icons { display: flex; gap: 4px; font-size: 10px; opacity: 0.7; }
+
+/* ── TOP BAR ── */
+.topbar {
+  padding: 6px 20px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.logo { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; color: var(--ink); }
+.logo em { color: var(--accent); font-style: normal; }
+.topbar-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(37,30,20,0.08); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; transition: all 0.15s; color: var(--ink);
+}
+.topbar-btn:active { background: rgba(37,30,20,0.16); transform: scale(0.93); }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  height: 80px;
+  flex-shrink: 0;
+  background: var(--paper);
+  border-top: 1px solid var(--ink3);
+  display: flex; align-items: flex-start;
+  padding-top: 10px;
+  position: relative;
+  z-index: 50;
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; transition: all 0.18s; padding: 4px 0;
+}
+.nav-icon { font-size: 22px; transition: transform 0.18s; }
+.nav-label { font-size: 10px; color: var(--ink2); font-weight: 500; letter-spacing: 0.3px; }
+.nav-item.active .nav-icon { transform: scale(1.15); }
+.nav-item.active .nav-label { color: var(--accent); font-weight: 600; }
+
+/* FAB */
+.fab {
+  position: absolute;
+  bottom: 68px; right: 18px;
+  width: 52px; height: 52px;
+  background: var(--accent);
+  border-radius: 50%;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: white;
+  box-shadow: 0 6px 20px rgba(155,35,53,0.45);
+  transition: all 0.2s;
+  z-index: 60;
+}
+.fab:active { transform: scale(0.93); }
+
+/* ════════════════════════════
+   HOME SCREEN
+════════════════════════════ */
+#screen-home { background: var(--bg); }
+
+.home-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 0 18px 20px;
+  -webkit-overflow-scrolling: touch;
+}
+.home-scroll::-webkit-scrollbar { display: none; }
+
+.today-section {
+  margin-bottom: 20px;
+}
+.section-label {
+  font-family: 'Playfair Display', serif;
+  font-style: italic; font-size: 12px; color: var(--ink2);
+  margin-bottom: 6px;
+}
+.today-date {
+  font-family: 'Caveat', cursive;
+  font-size: 32px; font-weight: 700; color: var(--ink);
+  line-height: 1; margin-bottom: 14px;
+}
+
+/* diary page card */
+.diary-card {
+  background: var(--paper);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(37,30,20,0.1);
+  position: relative;
+  min-height: 220px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  /* lined paper */
+  background-image: repeating-linear-gradient(transparent, transparent 27px, rgba(37,30,20,0.055) 27px, rgba(37,30,20,0.055) 28px);
+  background-position: 0 20px;
+}
+.diary-card:active { transform: scale(0.98); }
+.diary-card::before {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  border-style: solid; border-width: 0 20px 20px 0;
+  border-color: transparent var(--bg) transparent transparent;
+  z-index: 2;
+}
+
+.dc-polaroids {
+  padding: 18px 16px 10px;
+  display: flex; gap: 12px;
+  position: relative;
+}
+.dc-pol {
+  background: white;
+  padding: 6px 6px 22px;
+  box-shadow: 0 4px 16px rgba(37,30,20,0.14);
+  position: relative;
+}
+.dc-pol-img {
+  width: 88px; height: 88px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+.dc-pol-cap {
+  position: absolute; bottom: 3px; left: 0; right: 0;
+  text-align: center; font-family: 'Caveat', cursive; font-size: 10px; color: #888;
+}
+.dc-tape {
+  position: absolute; height: 14px; border-radius: 1px; opacity: 0.85;
+}
+.dc-note {
+  padding: 0 16px 16px;
+  font-family: 'Caveat', cursive; font-size: 16px;
+  color: #3a5a8c; line-height: 1.5;
+}
+.dc-stickers {
+  position: absolute; bottom: 12px; right: 12px;
+  display: flex; gap: 4px; font-size: 18px;
+}
+
+/* recent entries */
+.recent-label {
+  font-family: 'Playfair Display', serif;
+  font-style: italic; font-size: 12px; color: var(--ink2);
+  margin-bottom: 10px;
+}
+.entries-row {
+  display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px;
+}
+.entries-row::-webkit-scrollbar { display: none; }
+.entry-card {
+  flex-shrink: 0;
+  width: 100px;
+  background: var(--paper);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(37,30,20,0.1);
+  cursor: pointer;
+  transition: transform 0.18s;
+}
+.entry-card:active { transform: scale(0.95); }
+.ec-pol {
+  width: 100%; aspect-ratio: 1;
+  background: linear-gradient(135deg, #d4c5b0, #b8a898);
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.ec-info { padding: 6px 8px 8px; }
+.ec-date { font-family: 'Caveat', cursive; font-size: 13px; font-weight: 700; line-height: 1; }
+.ec-note { font-size: 10px; color: var(--ink2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ════════════════════════════
+   CALENDAR SCREEN — BOOKSHELF
+════════════════════════════ */
+#screen-calendar { background: #2A2218; }
+#screen-calendar .app-status { color: rgba(255,255,255,0.85); }
+
+.cal-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 0 20px;
+}
+.cal-scroll::-webkit-scrollbar { display: none; }
+
+/* year header */
+.cal-year-header {
+  padding: 8px 22px 16px;
+  display: flex; align-items: baseline; gap: 10px;
+}
+.cal-year-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 48px; font-weight: 700; color: rgba(255,255,255,0.9);
+  line-height: 1; letter-spacing: -2px;
+}
+.cal-year-sub {
+  font-family: 'Playfair Display', serif;
+  font-style: italic; font-size: 14px; color: rgba(255,255,255,0.4);
+}
+
+/* view mode toggle */
+.cal-mode-row {
+  display: flex; gap: 6px; padding: 0 22px 18px;
+}
+.cal-mode-btn {
+  padding: 6px 14px; border-radius: 100px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  background: transparent; color: rgba(255,255,255,0.5);
+  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.18s;
+}
+.cal-mode-btn.active {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.9);
+}
+
+/* ── SHELF ── */
+.shelf-container {
+  padding: 0 16px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+
+/* shelf row = 3 books + wood */
+.shelf-row {
+  position: relative;
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+}
+.shelf-plank {
+  position: absolute; bottom: 0; left: -8px; right: -8px;
+  height: 10px;
+  background: linear-gradient(180deg, #b89060 0%, #9A7248 60%, #7A5530 100%);
+  border-radius: 1px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+.shelf-books-row {
+  display: flex; gap: 6px; align-items: flex-end;
+}
+
+/* ── BOOK ── */
+.book {
+  flex: 1;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.book:active { transform: translateY(-8px) scale(1.04); }
+
+.book-spine {
+  border-radius: 3px 1px 1px 3px;
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: space-between;
+  padding: 12px 0 10px;
+  box-shadow: 3px 0 10px rgba(0,0,0,0.35), inset -2px 0 4px rgba(0,0,0,0.2), inset 1px 0 2px rgba(255,255,255,0.08);
+}
+.book-spine::before {
+  content: '';
+  position: absolute; top: 0; left: 3px; bottom: 0;
+  width: 1px;
+  background: rgba(255,255,255,0.1);
+}
+.book-spine::after {
+  content: '';
+  position: absolute; top: 0; right: 2px; bottom: 0;
+  width: 1px;
+  background: rgba(0,0,0,0.15);
+}
+
+.spine-year-lbl {
+  font-family: 'Caveat', cursive; font-size: 8px; font-weight: 600;
+  color: rgba(255,255,255,0.5); letter-spacing: 0.8px;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+}
+.spine-month-lbl {
+  font-family: 'Playfair Display', serif; font-weight: 700;
+  color: rgba(255,255,255,0.92);
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  flex: 1; display: flex; align-items: center; justify-content: center;
+}
+.spine-num-lbl {
+  font-family: 'Playfair Display', serif; font-size: 9px;
+  color: rgba(255,255,255,0.4);
+  writing-mode: vertical-rl; transform: rotate(180deg);
+}
+.spine-divider { width: 55%; height: 1px; background: rgba(255,255,255,0.2); }
+
+.book.has-entry .book-spine::before {
+  background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  width: 2px;
+}
+/* entry dot on book */
+.book-dot {
+  position: absolute; top: 6px; right: -3px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #F4C870;
+  box-shadow: 0 0 6px rgba(244,200,112,0.6);
+  display: none;
+}
+.book.has-entry .book-dot { display: block; }
+
+/* ── BOOK OPEN MODAL ── */
+.book-modal-overlay {
+  position: absolute;
+  inset: 0; border-radius: 52px;
+  background: rgba(20,15,10,0.7);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  display: flex; align-items: flex-end;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.book-modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.book-modal {
+  width: 100%;
+  background: var(--paper);
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.34,1.1,0.64,1);
+  max-height: 88%;
+  display: flex; flex-direction: column;
+}
+.book-modal-overlay.open .book-modal { transform: translateY(0); }
+
+/* book cover header */
+.bm-cover {
+  position: relative; overflow: hidden;
+  padding: 28px 22px 22px;
+  flex-shrink: 0;
+}
+.bm-cover-bg {
+  position: absolute; inset: 0;
+}
+.bm-cover-grain {
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+.bm-cover-content { position: relative; z-index: 1; }
+
+/* book fold animation lines */
+.bm-fold-lines {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 12px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.08) 40%, transparent 100%);
+  z-index: 2;
+}
+
+.bm-month-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 68px; font-weight: 700;
+  color: rgba(255,255,255,0.1);
+  line-height: 1; position: absolute;
+  right: 16px; top: 12px;
+}
+.bm-month-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 34px; font-weight: 700;
+  color: rgba(255,255,255,0.95);
+  line-height: 1; margin-bottom: 4px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.bm-year {
+  font-family: 'Caveat', cursive; font-size: 18px;
+  color: rgba(255,255,255,0.6);
+}
+.bm-deco { width: 40px; height: 2px; background: rgba(255,255,255,0.3); margin: 10px 0; }
+.bm-tagline {
+  font-family: 'Playfair Display', serif; font-style: italic;
+  font-size: 11px; color: rgba(255,255,255,0.45); line-height: 1.6;
+}
+.bm-badge {
+  position: absolute; bottom: 18px; right: 18px;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 100px; padding: 4px 10px;
+  font-size: 10px; color: rgba(255,255,255,0.75);
+  font-family: 'DM Sans', sans-serif;
+  backdrop-filter: blur(4px);
+}
+
+/* pull handle */
+.bm-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: rgba(37,30,20,0.15);
+  margin: 10px auto 0; flex-shrink: 0;
+}
+
+/* calendar inside book */
+.bm-cal {
+  flex: 1; overflow-y: auto; padding: 18px 18px 28px;
+  background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(37,30,20,0.05) 31px, rgba(37,30,20,0.05) 32px);
+  background-position: 0 18px;
+}
+.bm-cal::-webkit-scrollbar { display: none; }
+
+.bm-cal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.bm-cal-title { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; }
+.bm-nav-btns { display: flex; gap: 6px; }
+.bm-nav-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid var(--ink3); background: transparent;
+  cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center;
+  color: var(--ink); transition: all 0.15s;
+}
+.bm-nav-btn:active { background: var(--ink); color: var(--paper); }
+
+.bm-weekdays { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 6px; }
+.bm-wd { text-align: center; font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--ink2); padding: 2px 0; }
+
+.bm-days { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+.bm-day {
+  aspect-ratio: 1; border-radius: 8px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s; position: relative;
+}
+.bm-day:active { background: rgba(37,30,20,0.1); transform: scale(0.9); }
+.bm-day.today { background: rgba(155,35,53,0.12); }
+.bm-day.today .bmd-num { color: var(--accent); font-weight: 700; }
+.bm-day.other { opacity: 0.3; }
+.bm-day.has-e::after {
+  content: '';
+  position: absolute; bottom: 2px;
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--accent); opacity: 0.7;
+}
+.bmd-num { font-family: 'Caveat', cursive; font-size: 17px; font-weight: 600; line-height: 1; }
+.bm-day .pol-mini {
+  width: 70%; aspect-ratio: 1;
+  background: linear-gradient(135deg, #d4c5b0, #b8a898);
+  border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  margin-bottom: 1px;
+}
+
+.bm-close {
+  position: absolute; top: 14px; right: 14px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255,255,255,0.2); border: none;
+  cursor: pointer; font-size: 14px; color: white;
+  display: flex; align-items: center; justify-content: center; z-index: 10;
+  transition: all 0.15s;
+}
+.bm-close:active { background: rgba(255,255,255,0.35); }
+
+/* ════════════════════════════
+   DIARY DAY SCREEN
+════════════════════════════ */
+#screen-diary { background: var(--paper); }
+
+.diary-topbar {
+  padding: 6px 18px 10px;
+  display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+}
+.diary-back {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(37,30,20,0.08); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--ink); transition: all 0.15s;
+}
+.diary-back:active { background: rgba(37,30,20,0.16); }
+.diary-title-area { flex: 1; }
+.diary-date-top { font-family: 'Playfair Display', serif; font-style: italic; font-size: 11px; color: var(--ink2); }
+.diary-date-main { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; line-height: 1.1; }
+
+.diary-scroll {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.diary-scroll::-webkit-scrollbar { display: none; }
+
+.diary-page-inner {
+  margin: 0 14px;
+  background: var(--paper);
+  min-height: 480px;
+  position: relative;
+  background-image: repeating-linear-gradient(transparent, transparent 28px, rgba(37,30,20,0.055) 28px, rgba(37,30,20,0.055) 29px);
+  background-position: 0 0;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(37,30,20,0.08);
+  overflow: hidden;
+  padding: 16px;
+}
+.diary-page-inner::before {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  border-style: solid; border-width: 0 16px 16px 0;
+  border-color: transparent var(--bg) transparent transparent; z-index: 2;
+}
+
+/* polaroids on diary page */
+.dp-pol {
+  position: absolute;
+  background: white; padding: 7px 7px 24px;
+  box-shadow: 0 5px 20px rgba(37,30,20,0.15);
+  cursor: grab;
+}
+.dp-pol:active { cursor: grabbing; }
+.dp-pol-img {
+  width: 110px; height: 110px;
+  display: flex; align-items: center; justify-content: center; font-size: 32px;
+}
+.dp-pol-img img { width: 100%; height: 100%; object-fit: cover; }
+.dp-pol-cap {
+  position: absolute; bottom: 4px; left: 7px; right: 7px;
+  font-family: 'Caveat', cursive; font-size: 11px; color: #888;
+  text-align: center; background: transparent; border: none; outline: none;
+}
+.dp-tape { position: absolute; border-radius: 1px; pointer-events: none; }
+.dp-sticker { position: absolute; font-size: 22px; cursor: grab; line-height: 1; }
+.dp-sticker:active { cursor: grabbing; }
+.dp-note {
+  position: absolute;
+  font-family: 'Caveat', cursive; font-size: 16px; color: #3a5a8c;
+  line-height: 1.5; background: transparent; border: none; outline: none;
+  resize: none; min-width: 80px; min-height: 40px;
+}
+
+/* tools tray */
+.tools-tray {
+  margin: 14px 14px 0;
+  background: var(--paper);
+  border-radius: 16px 16px 0 0;
+  border-top: 1px solid var(--ink3);
+  flex-shrink: 0;
+}
+.tray-tabs {
+  display: flex; border-bottom: 1px solid var(--ink3);
+  padding: 0 12px;
+}
+.tray-tab {
+  flex: 1; padding: 10px 4px 8px;
+  text-align: center; font-size: 10px; font-weight: 500;
+  color: var(--ink2); cursor: pointer; border: none; background: transparent;
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+  border-bottom: 2px solid transparent;
+}
+.tray-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.tray-content { padding: 12px 14px 16px; }
+.tray-panel { display: none; }
+.tray-panel.active { display: block; }
+
+/* sticker grid */
+.sticker-grid-mob { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+.sg-item {
+  aspect-ratio: 1; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; cursor: pointer; background: rgba(37,30,20,0.04);
+  border: 1.5px solid transparent; transition: all 0.15s;
+}
+.sg-item:active { border-color: var(--accent); transform: scale(0.9); }
+
+/* tape grid */
+.tape-grid-mob { display: flex; flex-direction: column; gap: 8px; }
+.tg-item { height: 22px; border-radius: 2px; cursor: pointer; border: none; transition: transform 0.15s; }
+.tg-item:active { transform: scaleY(1.3); }
+
+/* filter row */
+.filter-row-mob { display: flex; gap: 6px; flex-wrap: wrap; }
+.fr-chip {
+  padding: 5px 14px; border-radius: 100px;
+  border: 1.5px solid var(--ink3); font-size: 12px;
+  cursor: pointer; background: transparent; color: var(--ink);
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.fr-chip.sel { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.fr-chip:active { transform: scale(0.95); }
+
+/* AI sticker gen */
+.ai-gen-mob { background: var(--paper2); border-radius: 12px; padding: 12px; }
+.ai-input-mob {
+  width: 100%; padding: 10px 12px; border-radius: 10px;
+  border: 1.5px solid var(--ink3); background: var(--paper);
+  font-family: 'Caveat', cursive; font-size: 16px; color: var(--ink);
+  outline: none; margin-bottom: 8px;
+}
+.ai-input-mob::placeholder { color: var(--ink2); }
+.ai-gen-btn-mob {
+  width: 100%; padding: 10px; border-radius: 10px;
+  background: var(--accent); color: white; border: none;
+  font-family: 'Caveat', cursive; font-size: 17px;
+  cursor: pointer; transition: all 0.18s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.ai-gen-btn-mob:active { opacity: 0.85; transform: scale(0.98); }
+.ai-result-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.ai-r-item {
+  width: 48px; height: 48px; border-radius: 10px;
+  border: 1.5px solid var(--ink3); background: var(--paper);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; cursor: pointer; transition: all 0.15s;
+}
+.ai-r-item:active { border-color: var(--accent); transform: scale(0.9); }
+
+/* ════════════════════════════
+   STICKERS SCREEN
+════════════════════════════ */
+#screen-stickers { background: var(--bg); }
+.stickers-scroll {
+  flex: 1; overflow-y: auto; padding: 0 18px 24px;
+}
+.stickers-scroll::-webkit-scrollbar { display: none; }
+
+.sticker-pack {
+  background: var(--paper); border-radius: 14px;
+  margin-bottom: 14px; overflow: hidden;
+  box-shadow: 0 3px 14px rgba(37,30,20,0.08);
+}
+.pack-header {
+  padding: 14px 16px 10px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.pack-title { font-family: 'Caveat', cursive; font-size: 20px; font-weight: 700; }
+.pack-count { font-size: 11px; color: var(--ink2); }
+.pack-stickers {
+  display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 16px;
+}
+.pack-stickers::-webkit-scrollbar { display: none; }
+.ps-item {
+  flex-shrink: 0; width: 54px; height: 54px; border-radius: 12px;
+  background: rgba(37,30,20,0.05); display: flex; align-items: center;
+  justify-content: center; font-size: 28px; cursor: pointer;
+  border: 1.5px solid transparent; transition: all 0.15s;
+}
+.ps-item:active { border-color: var(--accent); transform: scale(0.9); }
+
+/* AI generator section */
+.ai-section {
+  background: var(--paper); border-radius: 14px;
+  padding: 16px; margin-bottom: 14px;
+  box-shadow: 0 3px 14px rgba(37,30,20,0.08);
+}
+.ai-section-title { font-family: 'Caveat', cursive; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.ai-section-sub { font-size: 12px; color: var(--ink2); margin-bottom: 12px; }
+.ai-gen-result-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-top: 10px; }
+.agrg-item {
+  aspect-ratio: 1; border-radius: 12px; border: 1.5px solid var(--ink3);
+  background: var(--paper2); display: flex; align-items: center; justify-content: center;
+  font-size: 32px; cursor: pointer; transition: all 0.18s;
+}
+.agrg-item:active { transform: scale(0.9); border-color: var(--accent); }
+
+/* ════════════════════════════
+   SETTINGS/PROFILE SCREEN
+════════════════════════════ */
+#screen-profile { background: var(--bg); }
+.profile-scroll { flex: 1; overflow-y: auto; padding: 0 18px 24px; }
+.profile-scroll::-webkit-scrollbar { display: none; }
+
+.profile-hero {
+  text-align: center; padding: 10px 0 20px;
+}
+.profile-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #C4923A);
+  margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; box-shadow: 0 6px 20px rgba(155,35,53,0.3);
+}
+.profile-name { font-family: 'Caveat', cursive; font-size: 26px; font-weight: 700; }
+.profile-sub { font-size: 12px; color: var(--ink2); margin-top: 2px; }
+
+.profile-card {
+  background: var(--paper); border-radius: 14px;
+  overflow: hidden; margin-bottom: 12px;
+  box-shadow: 0 3px 14px rgba(37,30,20,0.08);
+}
+.pc-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ink2); padding: 12px 16px 8px; }
+.pc-row {
+  display: flex; align-items: center; padding: 12px 16px;
+  border-top: 1px solid var(--ink3); cursor: pointer; transition: background 0.15s;
+}
+.pc-row:first-of-type { border-top: none; }
+.pc-row:active { background: rgba(37,30,20,0.04); }
+.pc-icon { font-size: 20px; margin-right: 12px; }
+.pc-label { font-size: 14px; font-weight: 500; flex: 1; }
+.pc-value { font-size: 13px; color: var(--ink2); }
+.pc-arrow { font-size: 14px; color: var(--ink2); margin-left: 8px; }
+
+/* theme swatches */
+.theme-swatches { display: flex; gap: 8px; padding: 8px 16px 14px; }
+.ts-item {
+  width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  border: 3px solid transparent; transition: all 0.18s; outline: 2px solid transparent;
+}
+.ts-item.sel { outline: 2px solid var(--ink); outline-offset: 2px; }
+.ts-item:active { transform: scale(0.9); }
+
+/* ── TOAST ── */
+.toast {
+  position: absolute; bottom: 92px; left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: var(--ink); color: #FAF7F1;
+  padding: 9px 20px; border-radius: 100px;
+  font-family: 'Caveat', cursive; font-size: 15px;
+  z-index: 500; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap; pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── ANIMATIONS ── */
+@keyframes plop {
+  0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+  65% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.plop { animation: plop 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+@keyframes develop {
+  0% { filter: brightness(3) saturate(0); }
+  100% { filter: brightness(1) saturate(1); }
+}
+.develop { animation: develop 2s ease-out forwards; }
+</style>
+</head>
+<body>
+
+<div class="phone-shell">
+  <!-- phone notch -->
+  <div class="phone-notch">
+    <div class="notch-speaker"></div>
+    <div class="notch-camera"></div>
+  </div>
+
+  <div class="app-screen">
+
+    <!-- ════ HOME SCREEN ════ -->
+    <div class="screen active" id="screen-home">
+      <div class="app-status">
+        <div class="app-time">9:41</div>
+        <div class="app-icons">▲ WiFi ⬛</div>
+      </div>
+      <div class="topbar">
+        <div class="logo">Pola<em>✦</em>Diary</div>
+        <div style="display:flex;gap:8px">
+          <button class="topbar-btn" onclick="toast('🔔 Notifications')">🔔</button>
+          <button class="topbar-btn" onclick="switchScreen('screen-profile')">👤</button>
+        </div>
+      </div>
+      <div class="home-scroll">
+        <div class="today-section">
+          <div class="section-label">today</div>
+          <div class="today-date">Thursday, Feb 19 ✦</div>
+
+          <!-- today's diary card -->
+          <div class="diary-card" onclick="openDiary('Feb 19', 'Thursday, February 19')">
+            <!-- tapes -->
+            <div class="dc-tape" style="width:60px;top:14px;left:90px;transform:rotate(-4deg);height:14px;background:rgba(232,184,188,0.85)"></div>
+            <div class="dc-tape" style="width:45px;top:17px;right:50px;transform:rotate(5deg);height:14px;background:rgba(240,220,160,0.85)"></div>
+
+            <div class="dc-polaroids">
+              <div class="dc-pol" style="transform:rotate(-4deg)">
+                <div class="dc-pol-img" style="background:linear-gradient(135deg,#d4c5b0,#b8a898)">📷</div>
+                <div class="dc-pol-cap">sunday</div>
+              </div>
+              <div class="dc-pol" style="transform:rotate(3deg);margin-top:8px">
+                <div class="dc-pol-img" style="background:linear-gradient(135deg,#b0bcc8,#8898a8)">🎞️</div>
+                <div class="dc-pol-cap">film</div>
+              </div>
+            </div>
+            <div class="dc-note">the light was perfect today...</div>
+            <div class="dc-stickers">🌸 ✦</div>
+          </div>
+        </div>
+
+        <!-- recent entries -->
+        <div class="section-label" style="margin-bottom:10px">recent memories</div>
+        <div class="entries-row" style="margin-bottom:20px">
+          <div class="entry-card" onclick="openDiary('Feb 17','Monday, February 17')">
+            <div class="ec-pol" style="background:linear-gradient(135deg,#c0c8d0,#8898a8)">📷</div>
+            <div class="ec-info"><div class="ec-date">Feb 17</div><div class="ec-note">coffee & film</div></div>
+          </div>
+          <div class="entry-card" onclick="openDiary('Feb 14','Friday, February 14')">
+            <div class="ec-pol" style="background:linear-gradient(135deg,#c8b0b0,#a89090)">🌹</div>
+            <div class="ec-info"><div class="ec-date">Feb 14</div><div class="ec-note">valentine's</div></div>
+          </div>
+          <div class="entry-card" onclick="openDiary('Feb 10','Monday, February 10')">
+            <div class="ec-pol" style="background:linear-gradient(135deg,#b0c8b8,#88a898)">🌿</div>
+            <div class="ec-info"><div class="ec-date">Feb 10</div><div class="ec-note">winter walk</div></div>
+          </div>
+          <div class="entry-card" onclick="openDiary('Feb 5','Wednesday, February 5')">
+            <div class="ec-pol" style="background:linear-gradient(135deg,#c8c0b0,#a8a090)">🧺</div>
+            <div class="ec-info"><div class="ec-date">Feb 5</div><div class="ec-note">market day</div></div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-bottom:10px">this month at a glance</div>
+        <div style="background:var(--paper);border-radius:14px;padding:14px;box-shadow:0 3px 14px rgba(37,30,20,0.08);margin-bottom:24px">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:6px">
+            <div style="text-align:center;font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink2);padding:2px 0">S</div>
+            <div style="text-align:center;font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink2);padding:2px 0">M</div>
+            <div style="text-align:center;font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink2);padding:2px 0">T</div>
+            <div style="text-align:center;font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink2);padding:2px 0">W</div>
+            <div style="text-align:center;font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink2);padding:2px 0">T</div>
+            <div style="text-align:center;font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink2);padding:2px 0">F</div>
+            <div style="text-align:center;font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--ink2);padding:2px 0">S</div>
+          </div>
+          <div id="miniCalGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px"></div>
+        </div>
+      </div>
+
+      <button class="fab" onclick="openDiary('Feb 19','Thursday, February 19')">+</button>
+    </div>
+
+    <!-- ════ CALENDAR SCREEN ════ -->
+    <div class="screen" id="screen-calendar">
+      <div class="app-status dark" style="background:transparent">
+        <div class="app-time" style="color:rgba(255,255,255,0.85)">9:41</div>
+        <div class="app-icons" style="color:rgba(255,255,255,0.6)">▲ WiFi ⬛</div>
+      </div>
+      <div class="topbar" style="background:transparent">
+        <div class="logo" style="color:rgba(255,255,255,0.9)">2026</div>
+        <div style="display:flex;gap:8px">
+          <button class="topbar-btn" style="background:rgba(255,255,255,0.1);color:white" onclick="toast('Year view ✦')">📅</button>
+        </div>
+      </div>
+
+      <div class="cal-scroll">
+        <div class="cal-year-header">
+          <div class="cal-year-num" style="color:rgba(255,255,255,0.85)">2026</div>
+          <div class="cal-year-sub">your diary</div>
+        </div>
+
+        <!-- bookshelf rows -->
+        <div class="shelf-container" id="shelfContainer"></div>
+      </div>
+
+      <!-- BOOK OPEN MODAL -->
+      <div class="book-modal-overlay" id="bookModal">
+        <div class="book-modal" id="bookModalInner">
+          <div class="bm-handle"></div>
+          <div class="bm-cover" id="bmCover">
+            <div class="bm-cover-bg" id="bmCoverBg"></div>
+            <div class="bm-cover-grain"></div>
+            <div class="bm-fold-lines"></div>
+            <button class="bm-close" onclick="closeBookModal()">✕</button>
+            <div class="bm-cover-content">
+              <div class="bm-month-num" id="bmNum">02</div>
+              <div class="bm-month-name" id="bmName">February</div>
+              <div class="bm-year" id="bmYearLbl">2026</div>
+              <div class="bm-deco"></div>
+              <div class="bm-tagline" id="bmTagline">4 memories this month</div>
+            </div>
+            <div class="bm-badge" id="bmBadge">4 entries</div>
+          </div>
+
+          <div class="bm-cal">
+            <div class="bm-cal-header">
+              <div class="bm-cal-title" id="bmCalTitle">February 2026</div>
+              <div class="bm-nav-btns">
+                <button class="bm-nav-btn" onclick="shiftBookMonth(-1)">‹</button>
+                <button class="bm-nav-btn" onclick="shiftBookMonth(1)">›</button>
+              </div>
+            </div>
+            <div class="bm-weekdays">
+              <div class="bm-wd">S</div><div class="bm-wd">M</div><div class="bm-wd">T</div>
+              <div class="bm-wd">W</div><div class="bm-wd">T</div><div class="bm-wd">F</div><div class="bm-wd">S</div>
+            </div>
+            <div class="bm-days" id="bmDays"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ DIARY DAY SCREEN ════ -->
+    <div class="screen" id="screen-diary">
+      <div class="app-status">
+        <div class="app-time">9:41</div>
+        <div class="app-icons">▲ WiFi ⬛</div>
+      </div>
+      <div class="diary-topbar">
+        <button class="diary-back" onclick="goBack()">‹</button>
+        <div class="diary-title-area">
+          <div class="diary-date-top" id="diaryDateTop">Thursday</div>
+          <div class="diary-date-main" id="diaryDateMain">February 19, 2026</div>
+        </div>
+        <button class="topbar-btn" onclick="toast('✦ Saved!')">💾</button>
+        <button class="topbar-btn" onclick="toast('✦ Shared!')">↑</button>
+      </div>
+
+      <div class="diary-scroll">
+        <div class="diary-page-inner" id="diaryPageInner">
+          <!-- default tapes -->
+          <div class="dp-tape" style="width:55px;top:12px;left:95px;transform:rotate(-4deg);height:14px;background:rgba(232,184,188,0.85)"></div>
+          <div class="dp-tape" style="width:42px;top:15px;right:45px;transform:rotate(5deg);height:14px;background:rgba(107,130,160,0.45)"></div>
+          <!-- polaroid 1 -->
+          <div class="dp-pol" id="dpp1" style="top:14px;left:8px;transform:rotate(-4.5deg);z-index:5" onmousedown="dragPol(event,this)" ontouchstart="dragPolTouch(event,this)">
+            <div class="dp-pol-img" style="background:linear-gradient(135deg,#d4c5b0,#b8a898)">📷</div>
+            <input class="dp-pol-cap" value="sunday morning" onmousedown="e=>e.stopPropagation()" ontouchstart="e=>e.stopPropagation()">
+          </div>
+          <!-- polaroid 2 -->
+          <div class="dp-pol" id="dpp2" style="top:22px;left:165px;transform:rotate(2.5deg);z-index:4" onmousedown="dragPol(event,this)" ontouchstart="dragPolTouch(event,this)">
+            <div class="dp-pol-img" style="background:linear-gradient(135deg,#b0bcc8,#8898a8)">🎞️</div>
+            <input class="dp-pol-cap" value="film roll" onmousedown="e=>e.stopPropagation()" ontouchstart="e=>e.stopPropagation()">
+          </div>
+          <!-- note -->
+          <textarea class="dp-note" style="top:200px;left:10px;width:160px;height:90px">the light was perfect today...</textarea>
+          <!-- stickers -->
+          <div class="dp-sticker" style="top:188px;right:30px;transform:rotate(12deg);z-index:8" onmousedown="dragPol(event,this)" ontouchstart="dragPolTouch(event,this)">🌸</div>
+          <div class="dp-sticker" style="top:230px;right:58px;transform:rotate(-6deg);z-index:8" onmousedown="dragPol(event,this)" ontouchstart="dragPolTouch(event,this)">✦</div>
+          <div class="dp-sticker" style="bottom:80px;right:20px;transform:rotate(8deg);z-index:8" onmousedown="dragPol(event,this)" ontouchstart="dragPolTouch(event,this)">🎞️</div>
+          <!-- quote -->
+          <div style="position:absolute;bottom:24px;left:12px;background:#F4EFE6;border:1px solid rgba(37,30,20,0.1);padding:10px 12px;max-width:140px;font-family:'Playfair Display',serif;font-style:italic;font-size:10px;line-height:1.7;color:var(--ink);transform:rotate(-1.5deg);z-index:3;cursor:grab" onmousedown="dragPol(event,this)" ontouchstart="dragPolTouch(event,this)">
+            "may you love and be loved."
+          </div>
+        </div>
+
+        <!-- tools tray -->
+        <div class="tools-tray">
+          <div class="tray-tabs">
+            <button class="tray-tab active" onclick="switchTray(this,'tray-photo')">📷</button>
+            <button class="tray-tab" onclick="switchTray(this,'tray-sticker')">🌸</button>
+            <button class="tray-tab" onclick="switchTray(this,'tray-tape')">🎀</button>
+            <button class="tray-tab" onclick="switchTray(this,'tray-ai')">✦ AI</button>
+            <button class="tray-tab" onclick="switchTray(this,'tray-filter')">🎞️</button>
+          </div>
+          <div class="tray-content">
+            <!-- photo tray -->
+            <div class="tray-panel active" id="tray-photo">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <label style="border:2px dashed rgba(37,30,20,0.18);border-radius:12px;padding:16px;text-align:center;cursor:pointer;font-family:'Caveat',cursive;font-size:15px;color:var(--ink2)">
+                  <input type="file" accept="image/*" style="display:none" onchange="addPhotoFromFile(event)">
+                  <div style="font-size:24px;margin-bottom:4px">📷</div>Upload
+                </label>
+                <button onclick="addSamplePhoto()" style="border:2px dashed rgba(37,30,20,0.18);border-radius:12px;padding:16px;background:transparent;font-family:'Caveat',cursive;font-size:15px;color:var(--ink2);cursor:pointer">
+                  <div style="font-size:24px;margin-bottom:4px">🎞️</div>Sample
+                </button>
+              </div>
+            </div>
+            <!-- sticker tray -->
+            <div class="tray-panel" id="tray-sticker">
+              <div class="sticker-grid-mob">
+                <div class="sg-item" onclick="addSticker('🌸')">🌸</div>
+                <div class="sg-item" onclick="addSticker('🌹')">🌹</div>
+                <div class="sg-item" onclick="addSticker('🌿')">🌿</div>
+                <div class="sg-item" onclick="addSticker('✦')">✦</div>
+                <div class="sg-item" onclick="addSticker('⭐')">⭐</div>
+                <div class="sg-item" onclick="addSticker('🎞️')">🎞️</div>
+                <div class="sg-item" onclick="addSticker('📷')">📷</div>
+                <div class="sg-item" onclick="addSticker('☁️')">☁️</div>
+                <div class="sg-item" onclick="addSticker('🍃')">🍃</div>
+                <div class="sg-item" onclick="addSticker('🦋')">🦋</div>
+                <div class="sg-item" onclick="addSticker('🌙')">🌙</div>
+                <div class="sg-item" onclick="addSticker('💌')">💌</div>
+                <div class="sg-item" onclick="addSticker('🎀')">🎀</div>
+                <div class="sg-item" onclick="addSticker('🌷')">🌷</div>
+                <div class="sg-item" onclick="addSticker('✉️')">✉️</div>
+                <div class="sg-item" onclick="addSticker('🫧')">🫧</div>
+                <div class="sg-item" onclick="addSticker('🌊')">🌊</div>
+                <div class="sg-item" onclick="addSticker('🍵')">🍵</div>
+                <div class="sg-item" onclick="addSticker('🎵')">🎵</div>
+                <div class="sg-item" onclick="addSticker('🪷')">🪷</div>
+                <div class="sg-item" onclick="addSticker('🫶')">🫶</div>
+              </div>
+            </div>
+            <!-- tape tray -->
+            <div class="tray-panel" id="tray-tape">
+              <div class="tape-grid-mob">
+                <button class="tg-item" onclick="addTape('pink')" style="background:rgba(232,184,188,0.9)"></button>
+                <button class="tg-item" onclick="addTape('blue')" style="background:repeating-linear-gradient(90deg,rgba(107,130,160,0.5) 0,rgba(107,130,160,0.5) 6px,transparent 6px,transparent 12px);background-color:rgba(107,130,160,0.3)"></button>
+                <button class="tg-item" onclick="addTape('yellow')" style="background:rgba(240,220,160,0.88)"></button>
+                <button class="tg-item" onclick="addTape('floral')" style="background:rgba(232,184,188,0.7);background-image:repeating-linear-gradient(45deg,rgba(155,35,53,0.2) 0,rgba(155,35,53,0.2) 2px,transparent 2px,transparent 10px)"></button>
+              </div>
+            </div>
+            <!-- ai sticker tray -->
+            <div class="tray-panel" id="tray-ai">
+              <div class="ai-gen-mob">
+                <input class="ai-input-mob" id="aiInputDiary" placeholder="e.g. tiny film camera...">
+                <button class="ai-gen-btn-mob" id="aiDiaryBtn" onclick="generateAI()">✦ Generate Stickers</button>
+                <div class="ai-result-row" id="aiResultRow"></div>
+              </div>
+            </div>
+            <!-- filter tray -->
+            <div class="tray-panel" id="tray-filter">
+              <div class="filter-row-mob">
+                <button class="fr-chip sel" onclick="setFilter(this,'normal')">Normal</button>
+                <button class="fr-chip" onclick="setFilter(this,'bw')">B&W</button>
+                <button class="fr-chip" onclick="setFilter(this,'warm')">Warm</button>
+                <button class="fr-chip" onclick="setFilter(this,'faded')">Faded</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ STICKERS SCREEN ════ -->
+    <div class="screen" id="screen-stickers">
+      <div class="app-status">
+        <div class="app-time">9:41</div>
+        <div class="app-icons">▲ WiFi ⬛</div>
+      </div>
+      <div class="topbar">
+        <div class="logo">Pola<em>✦</em>Stickers</div>
+      </div>
+      <div class="stickers-scroll">
+        <!-- AI Generator -->
+        <div class="ai-section">
+          <div class="ai-section-title">✦ AI Generator</div>
+          <div class="ai-section-sub">Describe a sticker, we'll create it</div>
+          <input class="ai-input-mob" id="aiInputMain" placeholder="e.g. cute polaroid with flowers...">
+          <button class="ai-gen-btn-mob" onclick="generateAIMain()">✦ Generate</button>
+          <div class="ai-gen-result-grid" id="aiMainGrid"></div>
+        </div>
+
+        <!-- sticker packs -->
+        <div class="sticker-pack">
+          <div class="pack-header"><div class="pack-title">Nature ✿</div><div class="pack-count">10 stickers</div></div>
+          <div class="pack-stickers">
+            <div class="ps-item" onclick="toast('🌸 Added!')">🌸</div>
+            <div class="ps-item" onclick="toast('🌷 Added!')">🌷</div>
+            <div class="ps-item" onclick="toast('🌹 Added!')">🌹</div>
+            <div class="ps-item" onclick="toast('🌿 Added!')">🌿</div>
+            <div class="ps-item" onclick="toast('🍃 Added!')">🍃</div>
+            <div class="ps-item" onclick="toast('🌱 Added!')">🌱</div>
+            <div class="ps-item" onclick="toast('🪷 Added!')">🪷</div>
+            <div class="ps-item" onclick="toast('🌻 Added!')">🌻</div>
+            <div class="ps-item" onclick="toast('🍀 Added!')">🍀</div>
+            <div class="ps-item" onclick="toast('🌾 Added!')">🌾</div>
+          </div>
+        </div>
+        <div class="sticker-pack">
+          <div class="pack-header"><div class="pack-title">Film & Camera 🎞️</div><div class="pack-count">8 stickers</div></div>
+          <div class="pack-stickers">
+            <div class="ps-item" onclick="toast('📷 Added!')">📷</div>
+            <div class="ps-item" onclick="toast('🎞️ Added!')">🎞️</div>
+            <div class="ps-item" onclick="toast('📸 Added!')">📸</div>
+            <div class="ps-item" onclick="toast('🎬 Added!')">🎬</div>
+            <div class="ps-item" onclick="toast('🔭 Added!')">🔭</div>
+            <div class="ps-item" onclick="toast('📻 Added!')">📻</div>
+            <div class="ps-item" onclick="toast('🕯️ Added!')">🕯️</div>
+            <div class="ps-item" onclick="toast('🪞 Added!')">🪞</div>
+          </div>
+        </div>
+        <div class="sticker-pack">
+          <div class="pack-header"><div class="pack-title">Cozy ☕</div><div class="pack-count">8 stickers</div></div>
+          <div class="pack-stickers">
+            <div class="ps-item" onclick="toast('🍵 Added!')">🍵</div>
+            <div class="ps-item" onclick="toast('☕ Added!')">☕</div>
+            <div class="ps-item" onclick="toast('🧁 Added!')">🧁</div>
+            <div class="ps-item" onclick="toast('🍰 Added!')">🍰</div>
+            <div class="ps-item" onclick="toast('🪴 Added!')">🪴</div>
+            <div class="ps-item" onclick="toast('📖 Added!')">📖</div>
+            <div class="ps-item" onclick="toast('🕯️ Added!')">🕯️</div>
+            <div class="ps-item" onclick="toast('🛋️ Added!')">🛋️</div>
+          </div>
+        </div>
+        <div class="sticker-pack">
+          <div class="pack-header"><div class="pack-title">Sky & Stars ✦</div><div class="pack-count">8 stickers</div></div>
+          <div class="pack-stickers">
+            <div class="ps-item" onclick="toast('✦ Added!')">✦</div>
+            <div class="ps-item" onclick="toast('⭐ Added!')">⭐</div>
+            <div class="ps-item" onclick="toast('🌙 Added!')">🌙</div>
+            <div class="ps-item" onclick="toast('☁️ Added!')">☁️</div>
+            <div class="ps-item" onclick="toast('🌈 Added!')">🌈</div>
+            <div class="ps-item" onclick="toast('⛅ Added!')">⛅</div>
+            <div class="ps-item" onclick="toast('💫 Added!')">💫</div>
+            <div class="ps-item" onclick="toast('✨ Added!')">✨</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PROFILE SCREEN ════ -->
+    <div class="screen" id="screen-profile">
+      <div class="app-status">
+        <div class="app-time">9:41</div>
+        <div class="app-icons">▲ WiFi ⬛</div>
+      </div>
+      <div class="topbar">
+        <button class="topbar-btn" onclick="goBack()">‹</button>
+        <div class="logo" style="flex:1;text-align:center">Profile</div>
+        <div style="width:34px"></div>
+      </div>
+      <div class="profile-scroll">
+        <div class="profile-hero">
+          <div class="profile-avatar">🌸</div>
+          <div class="profile-name">My Diary ✦</div>
+          <div class="profile-sub">62 memories · since Jan 2026</div>
+        </div>
+
+        <div class="profile-card">
+          <div class="pc-title">Appearance</div>
+          <div style="padding:8px 16px 14px">
+            <div style="font-size:12px;color:var(--ink2);margin-bottom:8px">Theme</div>
+            <div class="theme-swatches">
+              <div class="ts-item sel" style="background:linear-gradient(135deg,#F4EFE6,#9B2335)" onclick="applyTheme('linen',this)"></div>
+              <div class="ts-item" style="background:linear-gradient(135deg,#EEF2F7,#6B82A0)" onclick="applyTheme('blue',this)"></div>
+              <div class="ts-item" style="background:linear-gradient(135deg,#FFF0F3,#E8B8BC)" onclick="applyTheme('pink',this)"></div>
+              <div class="ts-item" style="background:linear-gradient(135deg,#181614,#D4835A)" onclick="applyTheme('dark',this)"></div>
+              <div class="ts-item" style="background:linear-gradient(135deg,#EDF2EE,#8AA898)" onclick="applyTheme('sage',this)"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <div class="pc-title">My Stats</div>
+          <div class="pc-row"><span class="pc-icon">📷</span><span class="pc-label">Total photos</span><span class="pc-value">128</span></div>
+          <div class="pc-row"><span class="pc-icon">📖</span><span class="pc-label">Diary pages</span><span class="pc-value">62</span></div>
+          <div class="pc-row"><span class="pc-icon">🎞️</span><span class="pc-label">Film rolls used</span><span class="pc-value">4</span></div>
+          <div class="pc-row"><span class="pc-icon">🌸</span><span class="pc-label">Stickers placed</span><span class="pc-value">340</span></div>
+        </div>
+
+        <div class="profile-card">
+          <div class="pc-title">Settings</div>
+          <div class="pc-row" onclick="toast('🔔 Notifications settings')"><span class="pc-icon">🔔</span><span class="pc-label">Notifications</span><span class="pc-value">On</span><span class="pc-arrow">›</span></div>
+          <div class="pc-row" onclick="toast('📤 Export diary')"><span class="pc-icon">📤</span><span class="pc-label">Export diary</span><span class="pc-arrow">›</span></div>
+          <div class="pc-row" onclick="toast('☁️ Backup settings')"><span class="pc-icon">☁️</span><span class="pc-label">iCloud backup</span><span class="pc-value">On</span><span class="pc-arrow">›</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BOTTOM NAV ── -->
+    <div class="bottom-nav" id="bottomNav" style="display:flex">
+      <div class="nav-item active" id="nav-home" onclick="switchScreen('screen-home');setNav(this)">
+        <div class="nav-icon">🏠</div>
+        <div class="nav-label">Home</div>
+      </div>
+      <div class="nav-item" id="nav-calendar" onclick="switchScreen('screen-calendar');setNav(this)">
+        <div class="nav-icon">📚</div>
+        <div class="nav-label">Calendar</div>
+      </div>
+      <div class="nav-item" id="nav-stickers" onclick="switchScreen('screen-stickers');setNav(this)">
+        <div class="nav-icon">🌸</div>
+        <div class="nav-label">Stickers</div>
+      </div>
+      <div class="nav-item" id="nav-profile" onclick="switchScreen('screen-profile');setNav(this)">
+        <div class="nav-icon">👤</div>
+        <div class="nav-label">Profile</div>
+      </div>
+    </div>
+
+    <!-- toast -->
+    <div class="toast" id="toast"></div>
+
+  </div><!-- /app-screen -->
+</div><!-- /phone-shell -->
+
+<script>
+// ── Book colors ──
+const bookColors = [
+  '#8B3A4A','#5C7A96','#7A9688','#9B6A3A','#6A5C8B',
+  '#8B5A3A','#3A6A5C','#8B7A3A','#5C3A6A','#6A8B3A',
+  '#3A5C8B','#8B3A6A'
+];
+
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const monthQuotes = [
+  'new beginnings, fresh starts','love letters and soft light','spring is waking slowly','longer days, open windows','everything is blooming','warm gold afternoons','midsummer memories','lazy, sun-soaked days','back to cozy rituals','golden leaves falling','quiet, candlelit evenings','the year wraps gently'];
+const entryData = {1:[5,10,14,17,19], 0:[3,12,20], 2:[8,15,22]};
+
+let currentBookMonth = 1;
+let lastScreen = 'screen-home';
+let dragging = null, dragOx = 0, dragOy = 0;
+
+// ── BUILD BOOKSHELF ──
+function buildShelf() {
+  const container = document.getElementById('shelfContainer');
+  container.innerHTML = '';
+  // 3 rows of 4 books
+  for (let row = 0; row < 3; row++) {
+    const shelfRow = document.createElement('div');
+    shelfRow.className = 'shelf-row';
+    const booksRow = document.createElement('div');
+    booksRow.className = 'shelf-books-row';
+
+    for (let col = 0; col < 4; col++) {
+      const mi = row * 4 + col;
+      if (mi >= 12) break;
+      const hasEntry = entryData[mi] && entryData[mi].length > 0;
+      const h = 100 + Math.sin(mi * 1.3) * 18 + col * 4;
+      const w = 44 + Math.cos(mi * 0.9) * 4;
+      const fontSize = w > 46 ? '13px' : '11px';
+
+      const book = document.createElement('div');
+      book.className = 'book' + (hasEntry ? ' has-entry' : '');
+      book.innerHTML = `
+        <div class="book-dot"></div>
+        <div class="book-spine" style="width:${w}px;height:${h}px;background:linear-gradient(160deg,${bookColors[mi]}dd,${bookColors[mi]}88)">
+          <div class="spine-year-lbl">2026</div>
+          <div class="spine-divider"></div>
+          <div class="spine-month-lbl" style="font-size:${fontSize}">${monthNames[mi]}</div>
+          <div class="spine-divider"></div>
+          <div class="spine-num-lbl">0${mi+1 < 10 ? '0'+(mi+1) : mi+1}</div>
+        </div>
+      `;
+      book.onclick = () => openBook(mi);
+      booksRow.appendChild(book);
+    }
+
+    const plank = document.createElement('div');
+    plank.className = 'shelf-plank';
+    shelfRow.appendChild(booksRow);
+    shelfRow.appendChild(plank);
+    container.appendChild(shelfRow);
+  }
+}
+
+// ── OPEN BOOK ──
+function openBook(mi) {
+  currentBookMonth = mi;
+  const overlay = document.getElementById('bookModal');
+  const bg = document.getElementById('bmCoverBg');
+  bg.style.background = `linear-gradient(145deg, ${bookColors[mi]}ee, ${bookColors[mi]}88)`;
+  document.getElementById('bmName').textContent = monthNames[mi];
+  document.getElementById('bmNum').textContent = String(mi+1).padStart(2,'0');
+  document.getElementById('bmYearLbl').textContent = '2026';
+  const entries = (entryData[mi] || []).length;
+  document.getElementById('bmTagline').textContent = entries ? `${entries} memor${entries===1?'y':'ies'} this month` : 'no entries yet — start writing';
+  document.getElementById('bmBadge').textContent = entries ? `${entries} entries` : 'empty';
+  buildBookCal(mi);
+  overlay.classList.add('open');
+}
+
+function closeBookModal() {
+  document.getElementById('bookModal').classList.remove('open');
+}
+
+function shiftBookMonth(dir) {
+  currentBookMonth = (currentBookMonth + dir + 12) % 12;
+  openBook(currentBookMonth);
+}
+
+function buildBookCal(mi) {
+  document.getElementById('bmCalTitle').textContent = monthNames[mi] + ' 2026';
+  const days = document.getElementById('bmDays');
+  days.innerHTML = '';
+  const startDay = [3,0,0,2,4,6,1,3,5,0,2,4][mi];
+  const daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31][mi];
+  const entryDays = new Set(entryData[mi] || []);
+  const prevDays = [31,31,28,31,30,31,30,31,31,30,31,30][mi];
+
+  for (let i=0;i<startDay;i++) {
+    const el = document.createElement('div');
+    el.className = 'bm-day other';
+    el.innerHTML = `<div class="bmd-num">${prevDays - startDay + 1 + i}</div>`;
+    days.appendChild(el);
+  }
+  for (let d=1;d<=daysInMonth;d++) {
+    const el = document.createElement('div');
+    const isToday = d===19 && mi===1;
+    const hasE = entryDays.has(d);
+    el.className = 'bm-day'+(isToday?' today':'')+(hasE?' has-e':'');
+    el.innerHTML = hasE
+      ? `<div class="pol-mini"></div><div class="bmd-num">${d}</div>`
+      : `<div class="bmd-num">${d}</div>`;
+    el.onclick = () => { closeBookModal(); openDiary(monthNames[mi].slice(0,3)+' '+d, monthNames[mi]+' '+d+', 2026'); };
+    days.appendChild(el);
+  }
+}
+
+// ── MINI CAL (home) ──
+function buildMiniCal() {
+  const grid = document.getElementById('miniCalGrid');
+  grid.innerHTML = '';
+  const startDay = 0; // Feb 2026 starts Sunday
+  const daysInMonth = 28;
+  const entryDays = new Set([5,10,14,17,19]);
+
+  for (let i=0;i<startDay;i++) {
+    const el = document.createElement('div');
+    el.style.cssText = 'aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:Caveat,cursive;font-size:13px;opacity:0.25;color:var(--ink2)';
+    el.textContent = 27 + i;
+    grid.appendChild(el);
+  }
+  for (let d=1;d<=daysInMonth;d++) {
+    const isToday = d===19;
+    const hasE = entryDays.has(d);
+    const el = document.createElement('div');
+    el.style.cssText = `aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Caveat',cursive;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s;position:relative;${isToday?'background:rgba(155,35,53,0.12);color:var(--accent);':''}`;
+    el.textContent = d;
+    if (hasE) {
+      const dot = document.createElement('div');
+      dot.style.cssText = 'position:absolute;bottom:1px;width:3px;height:3px;border-radius:50%;background:var(--accent);opacity:0.7';
+      el.appendChild(dot);
+    }
+    el.onclick = () => openDiary('Feb '+d, 'February '+d+', 2026');
+    grid.appendChild(el);
+  }
+}
+
+// ── SCREEN SWITCHING ──
+function switchScreen(id) {
+  lastScreen = document.querySelector('.screen.active')?.id || 'screen-home';
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const isDiary = id === 'screen-diary';
+  document.getElementById('bottomNav').style.display = isDiary ? 'none' : 'flex';
+}
+
+function setNav(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function goBack() {
+  switchScreen(lastScreen || 'screen-home');
+  document.getElementById('bottomNav').style.display = 'flex';
+}
+
+function openDiary(dateShort, dateLong) {
+  document.getElementById('diaryDateTop').textContent = dateShort;
+  document.getElementById('diaryDateMain').textContent = dateLong;
+  switchScreen('screen-diary');
+}
+
+// ── DRAG (mouse) ──
+document.addEventListener('mousemove', e => {
+  if (!dragging) return;
+  const page = document.getElementById('diaryPageInner').getBoundingClientRect();
+  dragging.style.left = (e.clientX - page.left - dragOx) + 'px';
+  dragging.style.top  = (e.clientY - page.top  - dragOy) + 'px';
+});
+document.addEventListener('mouseup', () => { dragging = null; });
+
+function dragPol(e, el) {
+  if (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  dragging = el;
+  const r = el.getBoundingClientRect();
+  dragOx = e.clientX - r.left; dragOy = e.clientY - r.top;
+  el.style.zIndex = 50; e.preventDefault();
+}
+
+// ── DRAG (touch) ──
+function dragPolTouch(e, el) {
+  if (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  const touch = e.touches[0];
+  const page = document.getElementById('diaryPageInner').getBoundingClientRect();
+  const r = el.getBoundingClientRect();
+  const ox = touch.clientX - r.left, oy = touch.clientY - r.top;
+  el.style.zIndex = 50;
+
+  function move(ev) {
+    const t = ev.touches[0];
+    el.style.left = (t.clientX - page.left - ox) + 'px';
+    el.style.top  = (t.clientY - page.top  - oy) + 'px';
+    ev.preventDefault();
+  }
+  function end() {
+    document.removeEventListener('touchmove', move);
+    document.removeEventListener('touchend', end);
+  }
+  document.addEventListener('touchmove', move, {passive:false});
+  document.addEventListener('touchend', end);
+  e.preventDefault();
+}
+
+// ── ADD STICKER ──
+function addSticker(emoji) {
+  const page = document.getElementById('diaryPageInner');
+  const s = document.createElement('div');
+  s.className = 'dp-sticker plop';
+  s.textContent = emoji;
+  s.style.top  = (50 + Math.random()*350) + 'px';
+  s.style.left = (10 + Math.random()*230) + 'px';
+  s.style.transform = `rotate(${(Math.random()-.5)*20}deg)`;
+  s.style.zIndex = 20;
+  s.onmousedown = e => dragPol(e, s);
+  s.ontouchstart = e => dragPolTouch(e, s);
+  page.appendChild(s);
+  toast(emoji + ' added!');
+}
+
+// ── ADD TAPE ──
+function addTape(type) {
+  const page = document.getElementById('diaryPageInner');
+  const t = document.createElement('div');
+  t.className = 'dp-tape';
+  t.style.width  = (45 + Math.random()*55) + 'px';
+  t.style.height = '14px';
+  t.style.top    = (10 + Math.random()*440) + 'px';
+  t.style.left   = (8 + Math.random()*250) + 'px';
+  t.style.transform = `rotate(${(Math.random()-.5)*12}deg)`;
+  t.style.borderRadius = '1px';
+  const bg = {pink:'rgba(232,184,188,0.88)',blue:'rgba(107,130,160,0.4)',yellow:'rgba(240,220,160,0.88)',floral:'rgba(232,184,188,0.7)'};
+  t.style.background = bg[type];
+  if (type==='blue') t.style.backgroundImage='repeating-linear-gradient(90deg,rgba(107,130,160,0.5) 0,rgba(107,130,160,0.5) 6px,transparent 6px,transparent 12px)';
+  page.appendChild(t);
+  toast('🎀 Tape added!');
+}
+
+// ── ADD PHOTO ──
+function addPhotoFromFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => addPol(ev.target.result);
+  reader.readAsDataURL(file);
+}
+
+function addSamplePhoto() { addPol(null); }
+
+function addPol(src) {
+  const page = document.getElementById('diaryPageInner');
+  const pol = document.createElement('div');
+  pol.className = 'dp-pol plop';
+  pol.style.top  = (20 + Math.random()*200) + 'px';
+  pol.style.left = (10 + Math.random()*160) + 'px';
+  pol.style.transform = `rotate(${(Math.random()-.5)*10}deg)`;
+  pol.style.zIndex = 10;
+  pol.onmousedown = e => dragPol(e, pol);
+  pol.ontouchstart = e => dragPolTouch(e, pol);
+
+  const imgDiv = document.createElement('div');
+  imgDiv.className = 'dp-pol-img';
+  if (src) {
+    imgDiv.style.padding = '0';
+    const img = document.createElement('img');
+    img.src = src; img.className = 'develop';
+    img.style.cssText = 'width:110px;height:110px;object-fit:cover;display:block';
+    imgDiv.appendChild(img);
+  } else {
+    imgDiv.style.background = `linear-gradient(135deg,${['#d4c5b0,#b8a898','#b0bcc8,#8898a8','#c8b0b0,#a89090'][Math.floor(Math.random()*3)]})`;
+    imgDiv.textContent = ['📷','🎞️','🌸'][Math.floor(Math.random()*3)];
+  }
+  const cap = document.createElement('input');
+  cap.className = 'dp-pol-cap'; cap.placeholder = 'caption...';
+  cap.onmousedown = e => e.stopPropagation();
+  cap.ontouchstart = e => e.stopPropagation();
+  pol.appendChild(imgDiv); pol.appendChild(cap);
+  page.appendChild(pol);
+  toast('📸 Developing...');
+}
+
+// ── FILTER ──
+function setFilter(el, f) {
+  document.querySelectorAll('.fr-chip').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  const filters = {normal:'',bw:'grayscale(100%) contrast(1.1)',warm:'sepia(0.35) saturate(1.2)',faded:'sepia(0.2) brightness(1.1) saturate(0.8)'};
+  document.querySelectorAll('.dp-pol img').forEach(img => img.style.filter = filters[f]);
+}
+
+// ── TRAY TABS ──
+function switchTray(el, panelId) {
+  document.querySelectorAll('.tray-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tray-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// ── AI STICKER (diary tray) ──
+const stickerMap = {camera:['📷','🎞️','📸','🎬','🔭'],flower:['🌸','🌷','🌹','🌺','🌻'],nature:['🌿','🍃','🌱','🍀','🌾'],star:['⭐','✨','💫','🌟','✦'],heart:['💌','💝','💕','🩷','❤️'],food:['🍵','🧁','🍰','☕','🧇'],sky:['☁️','🌙','🌈','⛅','🌤️'],vintage:['📻','🕯️','🪞','📜','🪴'],ribbon:['🎀','🎁','🎊','🎈','🎉']};
+function matchSet(p) { p=p.toLowerCase(); for(const[k,v] of Object.entries(stickerMap))if(p.includes(k))return v; return Object.values(stickerMap).flat().sort(()=>Math.random()-.5).slice(0,5); }
+
+function generateAI() {
+  const input = document.getElementById('aiInputDiary').value.trim();
+  if (!input) { toast('✦ Enter a description!'); return; }
+  const btn = document.getElementById('aiDiaryBtn');
+  const row = document.getElementById('aiResultRow');
+  btn.textContent = '⟳ Generating...'; btn.disabled = true;
+  row.innerHTML = '';
+  setTimeout(() => {
+    matchSet(input).forEach(s => {
+      const el = document.createElement('div');
+      el.className = 'ai-r-item plop'; el.textContent = s;
+      el.onclick = () => { addSticker(s); toast('✦ AI sticker added!'); };
+      row.appendChild(el);
+    });
+    btn.textContent = '✦ Generate Stickers'; btn.disabled = false;
+    toast('✦ Generated!');
+  }, 1600);
+}
+
+// ── AI STICKER (main screen) ──
+function generateAIMain() {
+  const input = document.getElementById('aiInputMain').value.trim();
+  if (!input) { toast('✦ Enter a description!'); return; }
+  const grid = document.getElementById('aiMainGrid');
+  grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;font-family:'Caveat',cursive;font-size:15px;color:var(--ink2);padding:16px">✦ Creating stickers...</div>`;
+  setTimeout(() => {
+    grid.innerHTML = '';
+    matchSet(input).forEach(s => {
+      const el = document.createElement('div');
+      el.className = 'agrg-item plop'; el.textContent = s;
+      el.onclick = () => toast(s + ' Added to sticker bank!');
+      grid.appendChild(el);
+    });
+    toast('✦ Done!');
+  }, 1800);
+}
+
+// ── THEMES ──
+const themes = {
+  linen: {'--bg':'#F4EFE6','--paper':'#FAF7F1','--paper2':'#F5F1E8','--accent':'#9B2335','--gold':'#C4923A'},
+  blue:  {'--bg':'#EEF2F7','--paper':'#F5F8FC','--paper2':'#EFF3F8','--accent':'#5C7A96','--gold':'#8AA8C0'},
+  pink:  {'--bg':'#FFF0F3','--paper':'#FFFAFC','--paper2':'#FDF5F7','--accent':'#C4485A','--gold':'#C4923A'},
+  dark:  {'--bg':'#181614','--paper':'#242018','--paper2':'#201E1A','--accent':'#D4835A','--gold':'#C4923A'},
+  sage:  {'--bg':'#EDF2EE','--paper':'#F4F7F4','--paper2':'#EFF3EF','--accent':'#5A7A5A','--gold':'#8AA898'},
+};
+function applyTheme(name, el) {
+  document.querySelectorAll('.ts-item').forEach(d => d.classList.remove('sel'));
+  el.classList.add('sel');
+  Object.entries(themes[name]).forEach(([k,v]) => document.documentElement.style.setProperty(k,v));
+  toast('✦ Theme applied!');
+}
+
+// ── TOAST ──
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── INIT ──
+buildShelf();
+buildMiniCal();
+</script>
+</body>
+</html>
